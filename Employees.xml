@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<personnel>
+	<person number="1">
+		<name>John Smith</name>
+		<email>john@test.com</email>
+		<mobile>+123546821</mobile>
+		<title>CTO</title>
+		<address></address>
+		<city></city>
+	</person>
+	<person number="2">
+		<name>Oliver Brown</name>
+		<email>oliver@test.com</email>
+		<mobile></mobile>
+		<title>CEO</title>
+		<address>New York City</address>
+		<city></city>
+	</person>
+</personnel>	
