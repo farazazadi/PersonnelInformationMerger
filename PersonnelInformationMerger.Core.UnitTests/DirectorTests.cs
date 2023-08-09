@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
+using NSubstitute;
 using PersonnelInformationMerger.Core.MergeStrategies;
 using PersonnelInformationMerger.Core.Models;
 using PersonnelInformationMerger.Core.Providers.AzureAd;
@@ -17,9 +17,9 @@ namespace PersonnelInformationMerger.Core.UnitTests
     public class DirectorTests
     {
 
-        private readonly Mock<AzureAdProvider> _azureAdProviderMock = new();
-        private readonly Mock<PayrollSystemProvider> _payrollSystemProviderMock = new();
-        private readonly Mock<ISavingStrategy> _savingStrategy = new();
+        private readonly AzureAdProvider _azureAdProviderMock = Substitute.For<AzureAdProvider>();
+        private readonly PayrollSystemProvider _payrollSystemProviderMock = Substitute.For<PayrollSystemProvider>();
+        private readonly ISavingStrategy _savingStrategy = Substitute.For<ISavingStrategy>();
 
 
         [Fact]
@@ -29,7 +29,7 @@ namespace PersonnelInformationMerger.Core.UnitTests
 
             var id = Guid.NewGuid().ToString();
 
-            _azureAdProviderMock.Setup(a => a.PersonnelList).Returns(() => new List<PersonStandardModel>
+            _azureAdProviderMock.PersonnelList.Returns( new List<PersonStandardModel>
             {
                 new()
                 {
@@ -40,7 +40,7 @@ namespace PersonnelInformationMerger.Core.UnitTests
             });
 
 
-            _payrollSystemProviderMock.Setup(a => a.PersonnelList).Returns(() => new List<PersonStandardModel>
+            _payrollSystemProviderMock.PersonnelList.Returns(new List<PersonStandardModel>
             {
                 new()
                 {
@@ -72,9 +72,9 @@ namespace PersonnelInformationMerger.Core.UnitTests
 
 
             var director = new Director(new NullLogger<Director>())
-                .WithProviders(_azureAdProviderMock.Object, _payrollSystemProviderMock.Object)
+                .WithProviders(_azureAdProviderMock, _payrollSystemProviderMock)
                 .WithMergingStrategy(mergeByNameStrategy)
-                .WithSavingStrategy(_savingStrategy.Object);
+                .WithSavingStrategy(_savingStrategy);
 
 
             // Act
@@ -105,7 +105,7 @@ namespace PersonnelInformationMerger.Core.UnitTests
 
             var id = Guid.NewGuid().ToString();
 
-            _azureAdProviderMock.Setup(a => a.PersonnelList).Returns(() => new List<PersonStandardModel>
+            _azureAdProviderMock.PersonnelList.Returns(new List<PersonStandardModel>
             {
                 new()
                 {
@@ -116,7 +116,7 @@ namespace PersonnelInformationMerger.Core.UnitTests
             });
 
 
-            _payrollSystemProviderMock.Setup(a => a.PersonnelList).Returns(() => new List<PersonStandardModel>
+            _payrollSystemProviderMock.PersonnelList.Returns(new List<PersonStandardModel>
             {
                 new()
                 {
@@ -134,9 +134,9 @@ namespace PersonnelInformationMerger.Core.UnitTests
 
             
             var director = new Director(new NullLogger<Director>())
-                .WithProviders(_azureAdProviderMock.Object, _payrollSystemProviderMock.Object)
+                .WithProviders(_azureAdProviderMock, _payrollSystemProviderMock)
                 .WithMergingStrategy(mergeByNameStrategy)
-                .WithSavingStrategy(_savingStrategy.Object);
+                .WithSavingStrategy(_savingStrategy);
 
 
             // Act
@@ -149,11 +149,8 @@ namespace PersonnelInformationMerger.Core.UnitTests
 
             // Assert 
 
-            _savingStrategy.Verify(s => s.Save(It.IsAny<List<PersonStandardModel>>()), Times.Once);
+            _savingStrategy.Received(1).Save(Arg.Any<List<PersonStandardModel>>());
         }
-
-
-
 
     }
 }
